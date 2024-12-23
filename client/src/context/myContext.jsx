@@ -3,12 +3,14 @@ import { MyContext } from './MyContext';
 
 export const MyProvider = ({ children }) => {
   const [userDetails, setUserDetails] = React.useState({
-    name: '',
-    position: '',
-    email: '',
-    phone: '',
-    address: '',
-    summary: '',
+    profile: {
+      name: '',
+      position: '',
+    },
+    contact: {
+      email: '',
+      phone: '',
+    },
   });
 
   return (

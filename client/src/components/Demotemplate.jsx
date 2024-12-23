@@ -9,19 +9,21 @@ const Demotemplate = () => {
       {/* Template */}
       {/* Header */}
       <div className="w-full flex items-center justify-between">
-        <span className="text-[24px] font-bold">{userDetails.name}</span>{' '}
+        <span className="text-[24px] font-bold">
+          {userDetails.profile.name}
+        </span>{' '}
         <span className="text-[23px] font-semibold">
-          {userDetails.position}
+          {userDetails.profile.position}
         </span>
       </div>
       {/* Contacts */}
       <div className="w-full py-4">
         <div className="w-full h-[1px] bg-black " />
         <div className="w-full flex items-center justify-center gap-10 py-4">
-          <span className="text-[13px]">{userDetails.phone}</span>
+          <span className="text-[13px]">{userDetails.contact.phone}</span>
           <span className="text-[13px] flex items-center gap-5">
             <div className="h-[5px] w-[5px] bg-black rounded-full " />
-            {userDetails.email}
+            {userDetails.contact.email}
           </span>
           <span className="text-[13px] flex items-center gap-5">
             <div className="h-[5px] w-[5px] bg-black rounded-full " />
