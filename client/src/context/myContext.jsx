@@ -10,11 +10,31 @@ export const MyProvider = ({ children }) => {
     contact: {
       email: '',
       phone: '',
+      address: '',
     },
+    summary: '',
+    professionalExperience: [],
+    education: {
+      year: '',
+      degree: '',
+      institution: '',
+    },
+    skills: [],
   });
 
+  const [sections, setSections] = React.useState([
+    { id: 'profile', title: 'Profile' },
+    { id: 'contact', title: 'Contact' },
+    { id: 'summary', title: 'Summary' },
+    { id: 'professional-experience', title: 'Professional Experience' },
+    { id: 'education', title: 'Education' },
+    { id: 'skills', title: 'Skills' },
+  ]);
+
   return (
-    <MyContext.Provider value={{ userDetails, setUserDetails }}>
+    <MyContext.Provider
+      value={{ userDetails, setUserDetails, sections, setSections }}
+    >
       {children}
     </MyContext.Provider>
   );

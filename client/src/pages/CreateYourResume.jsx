@@ -20,7 +20,7 @@ const CreateYourResume = () => {
     };
     const ratio = Math.min(
       pdfWidth / imgProps.width,
-      pdfHeight / imgProps.height,
+      pdfHeight / imgProps.height
     );
 
     pdf.addImage(
@@ -29,7 +29,7 @@ const CreateYourResume = () => {
       0,
       0,
       imgProps.width * ratio, // Scale width
-      imgProps.height * ratio, // Scale height
+      imgProps.height * ratio // Scale height
     );
 
     pdf.save('resume.pdf');
@@ -46,7 +46,7 @@ const CreateYourResume = () => {
           </button>
         </div>
         <div className="w-full flex items-start ">
-          <div className="w-full">
+          <div className="w-full overflow-scroll">
             <UserForm />
           </div>
           <div
