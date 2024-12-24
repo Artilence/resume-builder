@@ -6,7 +6,8 @@ export default function UserFormSectionWrapper({ section }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: section.id });
 
-  const [isOpen, setIsOpen] = useState(true);
+  //for collapsible section
+  const [isOpen, setIsOpen] = useState(false);
   const toggleSection = () => {
     setIsOpen(!isOpen);
   };
@@ -22,10 +23,10 @@ export default function UserFormSectionWrapper({ section }) {
       style={style}
       {...attributes}
       {...listeners}
-      className="flex flex-col gap-5 bg-green-200 p-5 rounded-md cursor-move"
+      className="flex flex-col gap-5 bg-green-200 p-5 rounded-md "
     >
       <h1
-        className="text-4xl font-bold hover:bg-green-600 cursor-pointer p-4 rounded-md"
+        className="text-4xl font-bold hover:bg-green-600 transition-all duration-300 hover:text-white cursor-pointer p-4 rounded-md"
         onClick={toggleSection}
       >
         {section.title}
@@ -39,4 +40,7 @@ export default function UserFormSectionWrapper({ section }) {
       </div>
     </div>
   );
+}
+
+{
 }
