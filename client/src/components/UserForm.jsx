@@ -22,8 +22,8 @@ const UserForm = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 250, // Slightly increase the delay (200-300ms works well)
-        tolerance: 8, // Allow a bit more movement tolerance
+        delay: 250,
+        tolerance: 8,
       },
     })
   );
@@ -40,11 +40,14 @@ const UserForm = () => {
   };
 
   return (
+    //DND Context
+    //This context wraps the entire form - allows listeners and hooks to be used
     <DndContext
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragEnd={handleDragEnd}
     >
+      {/* contains the sortable sections */}
       <SortableContext
         items={sections.map((section) => section.id)}
         strategy={verticalListSortingStrategy}
@@ -59,22 +62,4 @@ const UserForm = () => {
   );
 };
 
-// export default UserForm;
-// layout.map((column) => (
-//   <SortableContext
-//     if(column?.columns){
-
-//  }
-//   >
-
-//   </SortableContext>
-// ));
-
-// const layout = [
-//   {},
-//   {
-//     columns: [
-//       {},
-//       {}
-//     ]}
-//   ]
+export default UserForm;

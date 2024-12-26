@@ -2,6 +2,7 @@ import React from 'react';
 import { MyContext } from './MyContext';
 
 export const MyProvider = ({ children }) => {
+  //Form Details State
   const [userDetails, setUserDetails] = React.useState({
     profile: {
       name: '',
@@ -22,6 +23,7 @@ export const MyProvider = ({ children }) => {
     skills: [],
   });
 
+  //Sections State - Array for tracking the sections order
   const [sections, setSections] = React.useState([
     { id: 'profile', title: 'Profile' },
     { id: 'contact', title: 'Contact' },

@@ -3,6 +3,7 @@ import { CSS } from '@dnd-kit/utilities';
 import UserFormSections from './UserFormSections';
 import { useState } from 'react';
 export default function UserFormSectionWrapper({ section }) {
+  //DND Hooks
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: section.id });
 
@@ -12,12 +13,15 @@ export default function UserFormSectionWrapper({ section }) {
     setIsOpen(!isOpen);
   };
 
+  //DND Styles
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
   return (
+    //Section Wrapper
+    //This div wraps the organizable sections individually - with help of dnd-kit hooks and styles
     <div
       ref={setNodeRef}
       style={style}
@@ -31,6 +35,7 @@ export default function UserFormSectionWrapper({ section }) {
       >
         {section.title}
       </h1>
+
       <div
         className={`transition-all duration-500 overflow-hidden ${
           isOpen ? 'max-h-[1000px]' : 'max-h-0'
