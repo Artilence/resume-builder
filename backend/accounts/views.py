@@ -20,6 +20,13 @@ class RegisterView(generics.CreateAPIView):
 # 2. Custom Login View (Sets access + refresh tokens in cookies)
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
+        # Call the parent method to get the response (which includes tokens)
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # Get the user from the validated serializer
+        user = serializer.user
+        
         response = super().post(request, *args, **kwargs)
         access_token = response.data['access']
         refresh_token = response.data['refresh']
@@ -48,11 +55,17 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         del response.data['access']
         del response.data['refresh']
 
-        # Instead of returning user data here, the frontend calls /me next
+        # Add user data to the response
+        response.data['user'] = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email
+        }
+
         return response
 
 
-# 3. Custom Refresh Logic (Refresh Token in Cookie)
+# 3. Custom Refresh View (Handles Refresh from Cookies)
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
         request = self.context['request']

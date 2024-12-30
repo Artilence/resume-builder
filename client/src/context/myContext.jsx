@@ -1,41 +1,41 @@
-import React from 'react';
+// MyProvider.jsx
+import React, { useEffect, useState } from 'react';
 import { MyContext } from './MyContext';
+import { layoutsConfig } from '../layoutsConfig';
 
 export const MyProvider = ({ children }) => {
-  //Form Details State
-  const [userDetails, setUserDetails] = React.useState({
-    profile: {
-      name: '',
-      position: '',
-    },
-    contact: {
-      email: '',
-      phone: '',
-      address: '',
-    },
+  const [userDetails, setUserDetails] = useState({
+    profile: { name: '', position: '' },
+    contact: { email: '', phone: '', address: '' },
     summary: '',
     professionalExperience: [],
-    education: {
-      year: '',
-      degree: '',
-      institution: '',
-    },
+    education: { year: '', degree: '', institution: '' },
     skills: [],
   });
 
-  //Sections State - Array for tracking the sections order
-  const [sections, setSections] = React.useState([
-    { id: 'profile', title: 'Profile' },
-    { id: 'contact', title: 'Contact' },
-    { id: 'summary', title: 'Summary' },
-    { id: 'professional-experience', title: 'Professional Experience' },
-    { id: 'education', title: 'Education' },
-    { id: 'skills', title: 'Skills' },
-  ]);
+  // Layout selection
+  const [currentLayout, setCurrentLayout] = useState('layoutA');
+
+  // Sections order stored in context
+  const [sections, setSections] = useState(
+    layoutsConfig['layoutA'].sections // default to layoutA’s sections
+  );
+
+  // If user changes layout, update sections to match that new layout
+  useEffect(() => {
+    setSections(layoutsConfig[currentLayout].sections);
+  }, [currentLayout]);
 
   return (
     <MyContext.Provider
-      value={{ userDetails, setUserDetails, sections, setSections }}
+      value={{
+        userDetails,
+        setUserDetails,
+        currentLayout,
+        setCurrentLayout,
+        sections,
+        setSections,
+      }}
     >
       {children}
     </MyContext.Provider>

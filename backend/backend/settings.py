@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'accounts', 
     'rest_framework_simplejwt',
+    'userprofiles'
 ]
 
 MIDDLEWARE = [
@@ -64,10 +65,12 @@ CORS_ALLOW_CREDENTIALS = True
 ROOT_URLCONF = 'backend.urls'
 
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
+    'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ],
+        'accounts.authentication.CookieJWTAuthentication',  # Path to your new class
+    ),
 }
+
 
 TEMPLATES = [
     {

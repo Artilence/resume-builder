@@ -1,3 +1,4 @@
+// DemoTemplate.jsx
 import { useContext } from 'react';
 import { MyContext } from '../context/MyContext';
 
@@ -101,7 +102,7 @@ const DemoTemplate = () => {
   return (
     <div className="w-[794px] h-[1123px] bg-white p-8">
       {sections.map((section) => (
-        <div key={section?.id}>{renderSection(section?.id)}</div>
+        <div key={section.id}>{renderSection(section.id)}</div>
       ))}
     </div>
   );

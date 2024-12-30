@@ -1,341 +1,233 @@
-import { useState, useContext } from 'react';
+// src/components/UserFormSections.jsx
+import React, { useContext } from 'react';
 import { MyContext } from '../context/MyContext';
-export default function UserFormSections({ id }) {
+
+export default function UserFormSections({ fields }) {
   const { userDetails, setUserDetails } = useContext(MyContext);
 
-  // Experience Section Methods
-  const addExperience = () => {
-    const newExperience = {
-      company: '',
-      position: '',
-      startDate: '',
-      endDate: '',
-      description: '',
-    };
+  // Helper to get a nested value from userDetails by path, e.g. 'profile.name'
+  const getValueByKey = (keyPath) => {
+    return keyPath.split('.').reduce((acc, cur) => acc?.[cur], userDetails);
+  };
+
+  // Helper to set a nested value in userDetails
+  const setValueByKey = (keyPath, newValue) => {
+    // For simplicity, assume 2 levels max: e.g. 'profile.name'
+    const keys = keyPath.split('.');
+    if (keys.length === 1) {
+      setUserDetails((prev) => ({
+        ...prev,
+        [keys[0]]: newValue,
+      }));
+    } else if (keys.length === 2) {
+      const [top, sub] = keys;
+      setUserDetails((prev) => ({
+        ...prev,
+        [top]: {
+          ...prev[top],
+          [sub]: newValue,
+        },
+      }));
+    }
+    // If you have deeper nesting, you'd need a more robust approach.
+  };
+
+  // Add a new item to an array field
+  const addArrayItem = (arrayKey, defaultItem = {}) => {
     setUserDetails((prev) => ({
       ...prev,
-      professionalExperience: [
-        ...(prev.professionalExperience || []),
-        newExperience,
-      ],
+      [arrayKey]: [...(prev[arrayKey] || []), defaultItem],
     }));
   };
 
-  const updateExperience = (index, field, value) => {
-    const updatedExperiences = userDetails.professionalExperience.map(
-      (exp, i) => (i === index ? { ...exp, [field]: value } : exp)
-    );
+  // Remove an item from an array field
+  const removeArrayItem = (arrayKey, idx) => {
     setUserDetails((prev) => ({
       ...prev,
-      professionalExperience: updatedExperiences,
+      [arrayKey]: (prev[arrayKey] || []).filter((_, i) => i !== idx),
     }));
   };
 
-  const removeExperience = (index) => {
-    const filteredExperiences = userDetails.professionalExperience.filter(
-      (_, i) => i !== index
-    );
-    setUserDetails((prev) => ({
-      ...prev,
-      professionalExperience: filteredExperiences,
-    }));
-  };
-
-  //Skills Section Methods
-  const addSkill = () => {
-    setUserDetails((prev) => ({
-      ...prev,
-      skills: [...prev.skills, ''], // Add empty string for new skill
-    }));
-  };
-
-  const updateSkill = (index, value) => {
-    const updatedSkills = userDetails.skills.map((skill, i) =>
-      i === index ? value : skill
-    );
-    setUserDetails((prev) => ({
-      ...prev,
-      skills: updatedSkills,
-    }));
-  };
-  const removeSkill = (index) => {
-    const filteredSkills = userDetails.skills.filter((_, i) => i !== index);
-    setUserDetails((prev) => ({
-      ...prev,
-      skills: filteredSkills,
-    }));
+  // Update a subfield in an array
+  const updateArrayItem = (arrayKey, idx, subKey, newValue) => {
+    setUserDetails((prev) => {
+      const copy = [...prev[arrayKey]];
+      copy[idx] = { ...copy[idx], [subKey]: newValue };
+      return { ...prev, [arrayKey]: copy };
+    });
   };
 
   return (
-    <div className="flex flex-col gap-5">
-      {id === 'profile' && (
-        <>
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Name:</span>
-            <input
-              value={userDetails?.profile?.name}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  profile: {
-                    ...userDetails?.profile,
-                    name: e?.target?.value,
-                  },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Position:</span>
-            <input
-              value={userDetails?.profile?.position}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  profile: { ...userDetails.profile, position: e.target.value },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
-        </>
-      )}
-
-      {id === 'contact' && (
-        <>
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Email:</span>
-            <input
-              value={userDetails?.contact?.email}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  contact: { ...userDetails.contact, email: e.target.value },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Phone:</span>
-            <input
-              value={userDetails?.contact?.phone}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  contact: { ...userDetails.contact, phone: e.target.value },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Address:</span>
-            <input
-              value={userDetails?.contact?.address}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  contact: { ...userDetails.contact, address: e.target.value },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
-        </>
-      )}
-      {id === 'summary' && (
-        <textarea
-          rows={10}
-          value={userDetails?.summary}
-          onChange={(e) =>
-            setUserDetails({
-              ...userDetails,
-              summary: e.target.value,
-            })
-          }
-          className="border border-green-700 outline-none rounded-md p-2 text-3xl"
-        />
-      )}
-      {id === 'professional-experience' && (
-        <div className="flex flex-col gap-4">
-          {userDetails?.professionalExperience?.map((exp, i) => (
-            <div
-              key={i}
-              className="flex flex-col p-6 rounded-md border bg-emerald-50"
-            >
-              {userDetails.professionalExperience.length > 0 && (
-                <div className="w-full flex justify-end items-center">
-                  <span
-                    onClick={() => removeExperience(i)}
-                    className="rounded-full cursor-pointer flex justify-center items-center w-[30px] h-[30px] bg-green-700"
-                  >
-                    <span className="bg-white w-[15px] h-[1px]"></span>
-                  </span>
-                </div>
-              )}
-
-              <div className="flex flex-col gap-2">
-                <span className="text-2xl font-semibold">Company:</span>
-                <input
-                  value={exp.company}
-                  onChange={(e) =>
-                    updateExperience(i, 'company', e.target.value)
-                  }
-                  type="text"
-                  className="p-2 border border-green-700 outline-none rounded-md"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <span className="text-2xl font-semibold">Position:</span>
-                <input
-                  value={exp.position}
-                  onChange={(e) =>
-                    updateExperience(i, 'position', e.target.value)
-                  }
-                  type="text"
-                  className="p-2 border border-green-700 outline-none rounded-md"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <span className="text-2xl font-semibold">Start Date:</span>
-                <input
-                  value={exp.startDate}
-                  onChange={(e) =>
-                    updateExperience(i, 'startDate', e.target.value)
-                  }
-                  type="month"
-                  className="p-2 border border-green-700 outline-none rounded-md"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <span className="text-2xl font-semibold">End Date:</span>
-                <input
-                  value={exp.endDate}
-                  onChange={(e) =>
-                    updateExperience(i, 'endDate', e.target.value)
-                  }
-                  type="month"
-                  className="p-2 border border-green-700 outline-none rounded-md"
-                />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <span className="text-2xl font-semibold">Description:</span>
+    <div className="flex flex-col gap-4">
+      {fields.map((field, index) => {
+        // 1. If it's a normal input field
+        if (
+          !field.type ||
+          field.type === 'text' ||
+          field.type === 'textarea' ||
+          field.type === 'month'
+        ) {
+          // "type" is 'text', 'textarea', 'month', etc.
+          if (field.type === 'textarea') {
+            return (
+              <div key={index} className="flex flex-col gap-2">
+                <label className="font-semibold">{field.label}</label>
                 <textarea
-                  rows={5}
-                  value={exp.description}
-                  onChange={(e) =>
-                    updateExperience(i, 'description', e.target.value)
-                  }
-                  className="p-2 border border-green-700 outline-none rounded-md"
+                  rows={4}
+                  value={getValueByKey(field.key) || ''}
+                  onChange={(e) => setValueByKey(field.key, e.target.value)}
+                  className="border p-2 rounded-md"
                 />
               </div>
-            </div>
-          ))}
-          <button
-            onClick={addExperience}
-            className="bg-green-500 text-white p-2 rounded-md"
-          >
-            + Add Experience
-          </button>
-        </div>
-      )}
-      {id === 'education' && (
-        <div className="flex flex-col gap-4">
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Year:</span>
-            <input
-              value={userDetails?.education?.year}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  education: { ...userDetails.education, year: e.target.value },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
+            );
+          }
 
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Degree:</span>
-            <input
-              value={userDetails?.education?.degree}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  education: {
-                    ...userDetails.education,
-                    degree: e.target.value,
-                  },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
-
-          <div className="flex flex-col gap-2">
-            <span className="text-2xl font-semibold">Institution:</span>
-            <input
-              value={userDetails?.education?.institution}
-              onChange={(e) =>
-                setUserDetails({
-                  ...userDetails,
-                  education: {
-                    ...userDetails.education,
-                    institution: e.target.value,
-                  },
-                })
-              }
-              type="text"
-              className="p-2 border border-green-700 outline-none rounded-md"
-            />
-          </div>
-        </div>
-      )}
-      {id === 'skills' && (
-        <div className="flex flex-col gap-4">
-          <span className="text-2xl font-semibold">Skills:</span>
-
-          {userDetails.skills.map((skill, i) => (
-            <div key={i} className="flex items-center gap-2">
+          // If it's 'text' or 'month'
+          return (
+            <div key={index} className="flex flex-col gap-2">
+              <label className="font-semibold">{field.label}</label>
               <input
-                type="text"
-                value={skill}
-                onChange={(e) => updateSkill(i, e.target.value)}
-                className="p-2 border border-green-700 outline-none rounded-md w-full"
+                type={field.type === 'month' ? 'month' : 'text'}
+                value={getValueByKey(field.key) || ''}
+                onChange={(e) => setValueByKey(field.key, e.target.value)}
+                className="border p-2 rounded-md"
               />
-              <button
-                onClick={() => removeSkill(i)}
-                className="bg-red-500 text-white p-2 rounded-md"
-              >
-                X
-              </button>
             </div>
-          ))}
+          );
+        }
 
-          <button
-            onClick={addSkill}
-            className="bg-green-500 text-white p-2 rounded-md mt-3"
-          >
-            + Add Skill
-          </button>
-        </div>
-      )}
+        // 2. If it's an array field (e.g. professionalExperience, skills)
+        if (field.type === 'array') {
+          const arrayData = getValueByKey(field.key) || [];
+          const arrayKey = field.key; // e.g. "professionalExperience" or "skills"
+
+          // If we're dealing with an array of objects
+          if (
+            field.itemFields &&
+            field.itemFields.length > 0 &&
+            field.itemFields[0].key !== ''
+          ) {
+            // Example: professionalExperience array, each item has {company, position, ...}
+            return (
+              <div key={index} className="flex flex-col gap-2">
+                <label className="font-semibold">
+                  {field.label || 'Items'}
+                </label>
+                {arrayData.map((item, i) => (
+                  <div key={i} className="border p-4 rounded-md mb-2 relative">
+                    <button
+                      type="button"
+                      onClick={() => removeArrayItem(arrayKey, i)}
+                      className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 text-sm rounded"
+                    >
+                      Remove
+                    </button>
+
+                    {field.itemFields.map((subField, subIdx) => {
+                      return (
+                        <div key={subIdx} className="flex flex-col gap-1 my-2">
+                          <label className="text-sm font-semibold">
+                            {subField.label}
+                          </label>
+                          {subField.type === 'textarea' ? (
+                            <textarea
+                              rows={3}
+                              value={item[subField.key] || ''}
+                              onChange={(e) =>
+                                updateArrayItem(
+                                  arrayKey,
+                                  i,
+                                  subField.key,
+                                  e.target.value
+                                )
+                              }
+                              className="border p-2 rounded-md"
+                            />
+                          ) : (
+                            <input
+                              type={
+                                subField.type === 'month' ? 'month' : 'text'
+                              }
+                              value={item[subField.key] || ''}
+                              onChange={(e) =>
+                                updateArrayItem(
+                                  arrayKey,
+                                  i,
+                                  subField.key,
+                                  e.target.value
+                                )
+                              }
+                              className="border p-2 rounded-md"
+                            />
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    // Build a default item object
+                    const defaultObj = {};
+                    field.itemFields.forEach((f) => {
+                      defaultObj[f.key] = '';
+                    });
+                    addArrayItem(arrayKey, defaultObj);
+                  }}
+                  className="bg-green-500 text-white px-3 py-1 rounded"
+                >
+                  + Add Item
+                </button>
+              </div>
+            );
+          } else {
+            // Possibly an array of strings (like skills)
+            return (
+              <div key={index} className="flex flex-col gap-2">
+                <label className="font-semibold">
+                  {field.label || 'Items'}
+                </label>
+                {arrayData.map((val, i) => (
+                  <div key={i} className="flex items-center gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={val}
+                      onChange={(e) => {
+                        const newVal = e.target.value;
+                        setUserDetails((prev) => {
+                          const copy = [...prev[arrayKey]];
+                          copy[i] = newVal;
+                          return { ...prev, [arrayKey]: copy };
+                        });
+                      }}
+                      className="border p-2 rounded-md flex-1"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeArrayItem(arrayKey, i)}
+                      className="bg-red-500 text-white px-2 py-1 rounded"
+                    >
+                      X
+                    </button>
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => addArrayItem(arrayKey, '')}
+                  className="bg-green-500 text-white px-3 py-1 rounded"
+                >
+                  + Add Skill
+                </button>
+              </div>
+            );
+          }
+        }
+
+        return null; // Fallback if field type is unknown
+      })}
     </div>
   );
 }

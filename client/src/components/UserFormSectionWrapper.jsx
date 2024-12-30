@@ -1,51 +1,45 @@
+// src/components/UserFormSectionWrapper.jsx
+import React, { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import UserFormSections from './UserFormSections';
-import { useState } from 'react';
+
 export default function UserFormSectionWrapper({ section }) {
-  //DND Hooks
   const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({ id: section.id });
-
-  //for collapsible section
-  const [isOpen, setIsOpen] = useState(false);
-  const toggleSection = () => {
-    setIsOpen(!isOpen);
-  };
-
-  //DND Styles
+    useSortable({
+      id: section.id,
+    });
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
+  // Collapsible
+  const [isOpen, setIsOpen] = useState(true);
+  const toggleSection = () => setIsOpen(!isOpen);
+
   return (
-    //Section Wrapper
-    //This div wraps the organizable sections individually - with help of dnd-kit hooks and styles
     <div
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
-      className="flex flex-col gap-5 bg-green-200 p-5 rounded-md "
+      className="bg-green-200 p-4 rounded-md transition-all"
     >
-      <h1
-        className="text-4xl font-bold hover:bg-green-600 transition-all duration-300 hover:text-white cursor-pointer p-4 rounded-md"
+      <h2
         onClick={toggleSection}
+        className="text-2xl font-bold cursor-pointer mb-2"
       >
         {section.title}
-      </h1>
+      </h2>
 
       <div
-        className={`transition-all duration-500 overflow-hidden ${
-          isOpen ? 'max-h-[1000px]' : 'max-h-0'
+        className={`overflow-hidden transition-all ${
+          isOpen ? 'max-h-[2000px]' : 'max-h-0'
         }`}
       >
-        <UserFormSections id={section.id} />
+        <UserFormSections fields={section.fields} />
       </div>
     </div>
   );
-}
-
-{
 }
