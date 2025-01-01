@@ -1,7 +1,7 @@
 import { useContext } from 'react';
 import { MyContext } from '../context/MyContext';
 
-const DemoTemplate = () => {
+const DemoTemplate2 = () => {
   const { userDetails, sections } = useContext(MyContext);
 
   const renderSection = (id) => {
@@ -107,4 +107,4 @@ const DemoTemplate = () => {
   );
 };
 
-export default DemoTemplate;
+export default DemoTemplate2;
