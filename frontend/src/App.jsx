@@ -12,13 +12,13 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/linkedin/callback" element={<Homepage />} />
-        <Route path="/demotemplate" element={<Demotemplate />} />
-        <Route path="/previewresume" element={<PreviewResume />} />
+        {/* <Route path="/linkedin/callback" element={<Homepage />} /> */}
+        <Route path="/demo-template" element={<Demotemplate />} />
+        <Route path="/preview-resume" element={<PreviewResume />} />
         <Route path="/selectprofile" element={<SelectProfile />} />
-        <Route path="/createprofile" element={<CreateProfile />} />
-        <Route path="/Register" element={<RegisterPage />} />
-        <Route path="/Login" element={<LoginPage />} />
+        <Route path="/create-profile" element={<CreateProfile />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </>
   );
