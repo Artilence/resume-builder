@@ -3,6 +3,8 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
+
   css: {
     postcss: './postcss.config.js',
   },
