@@ -7,7 +7,9 @@ from django.contrib.auth.models import User
 class CookieJWTAuthentication(BaseAuthentication):
     def authenticate(self, request):
         access_token = request.COOKIES.get('access_token')
-
+        refresh_token = request.COOKIES.get('refresh_token')
+        print('refresh_token:\n',refresh_token,'\n')
+        print('access_token:\n',access_token,'\n')
         if not access_token:
             return None  # No token found, continue unauthenticated
 
@@ -18,7 +20,7 @@ class CookieJWTAuthentication(BaseAuthentication):
 
             # Retrieve the user
             user = User.objects.get(id=user_id)
-
+            print('user:\n',user,'\n')
             return (user, validated_token)
 
         except Exception as e:

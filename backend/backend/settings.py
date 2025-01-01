@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-j8c(a0#m=t##@w+ovk9pibbnyy$ow5g&svsl9sd1f+5q+@80t9
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -44,29 +44,39 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'userprofiles'
 ]
-
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
-    
 ]
 
+# CSRF and Cookie Settings (Place After Middleware)
+# CSRF_COOKIE_SECURE = False  # Change to True for production
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_HTTPONLY = False
+SESSION_COOKIE_SAMESITE = 'None'
+# CSRF_COOKIE_SAMESITE = 'None'
+
+
+# Allow frontend origin for CORS
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",  
+    "http://localhost:5173",  # Frontend domain
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = True  # Required for cookies to be sent across domains
+
+# CSRF_TRUSTED_ORIGINS = [
+#     "http://localhost:5173",
+# ]
 ROOT_URLCONF = 'backend.urls'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
         'accounts.authentication.CookieJWTAuthentication',  # Path to your new class
     ),
 }

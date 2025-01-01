@@ -1,24 +1,28 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Navigate } from 'react-router-dom';
-import { fetchUser } from '../redux/auth/authSlice';
+import { Navigate } from 'react-router';
+import { fetchUser } from '../app/auth/authSlice';
 
 const ProtectedRoute = ({ element: Element }) => {
   const dispatch = useDispatch();
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
+  const [checkedAuth, setCheckedAuth] = useState(false);
 
   useEffect(() => {
-    // 🔄 Fetch user if not authenticated
     if (!isAuthenticated) {
-      dispatch(fetchUser());
+      dispatch(fetchUser())
+        .unwrap()
+        .finally(() => setCheckedAuth(true)); // Proceed regardless of fetch success/failure
+    } else {
+      setCheckedAuth(true); // User is already authenticated
     }
   }, [isAuthenticated, dispatch]);
+  console.log(isAuthenticated);
 
-  if (loading) {
-    return <div>Loading...</div>; // Spinner while loading user
+  if (loading || !checkedAuth) {
+    return <div>Loading...</div>;
   }
 
-  // 🔐 If not authenticated, redirect to login
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
