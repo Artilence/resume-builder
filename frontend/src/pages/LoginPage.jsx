@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { login } from '../app/auth/authSlice';
 
 const Login = () => {
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     username: '',
     password: '',
@@ -23,21 +25,13 @@ const Login = () => {
     setSuccess(false);
 
     try {
-      const response = await axios.post(
-        'http://127.0.0.1:8000/api/login/',
-        formData,
-        {
-          withCredentials: true, // Important for sending HttpOnly cookies
-        }
-      );
-
-      if (response.status === 200) {
-        const accessToken = response.data.access;
-        localStorage.setItem('access_token', accessToken);
-        setSuccess(true);
-      }
+      const result = await dispatch(login(formData)).unwrap();
+      setSuccess(true);
+      setTimeout(() => {
+        window.location.href = '/dashboard'; // Redirect on success
+      }, 1000);
     } catch (err) {
-      setError('Invalid credentials. Please try again.');
+      setError(err || 'Invalid credentials');
     }
   };
 
@@ -47,7 +41,6 @@ const Login = () => {
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
 
         <form onSubmit={handleSubmit}>
-          {/* Username Field */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Username</label>
             <input
@@ -60,7 +53,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Password Field */}
           <div className="mb-6">
             <label className="block text-sm font-medium mb-2">Password</label>
             <input
@@ -73,7 +65,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300"
@@ -82,10 +73,7 @@ const Login = () => {
           </button>
         </form>
 
-        {/* Error Message */}
         {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-
-        {/* Success Message */}
         {success && (
           <p className="text-green-500 text-center mt-4">
             Login successful! Redirecting...

@@ -1,5 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from django.middleware.csrf import get_token
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -8,6 +9,9 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from rest_framework_simplejwt.tokens import AccessToken
 
 
 # 1. Register View (Public)
@@ -17,54 +21,51 @@ class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
 
 
-# 2. Custom Login View (Sets access + refresh tokens in cookies)
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
-        # Call the parent method to get the response (which includes tokens)
-        serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # Get the user from the validated serializer
-        user = serializer.user
-        
         response = super().post(request, *args, **kwargs)
+
+        # Get tokens from response
         access_token = response.data['access']
         refresh_token = response.data['refresh']
 
-        # Store Access Token in HttpOnly Cookie
+        # Decode access token to extract user information
+        decoded_token = AccessToken(access_token)
+        user_id = decoded_token['user_id']
+
+        # Fetch user from database
+        user = User.objects.get(id=user_id)
+
+        # Add user info to response data
+        response.data['user'] = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+        }
+
+        # Set HttpOnly cookies for tokens
         response.set_cookie(
             key='access_token',
             value=access_token,
             httponly=True,
-            secure=True,      # Use HTTPS in production
+            secure=False,  # Change to True in production
             samesite='Lax',
-            max_age=300       # 5 minutes (example)
+            max_age=300  # 5 minutes
         )
-
-        # Store Refresh Token in HttpOnly Cookie
         response.set_cookie(
             key='refresh_token',
             value=refresh_token,
             httponly=True,
-            secure=True,
+            secure=False,
             samesite='Lax',
-            max_age=3600 * 24 # 1 day
+            max_age=86400  # 1 day
         )
 
-        # Remove tokens from the response body
+        # Remove tokens from response body
         del response.data['access']
         del response.data['refresh']
 
-        # Add user data to the response
-        response.data['user'] = {
-            'id': user.id,
-            'username': user.username,
-            'email': user.email
-        }
-
         return response
-
-
 # 3. Custom Refresh View (Handles Refresh from Cookies)
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
@@ -78,8 +79,6 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
 
 
 class CustomTokenRefreshView(TokenRefreshView):
-    serializer_class = CustomTokenRefreshSerializer
-
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         try:
@@ -90,7 +89,7 @@ class CustomTokenRefreshView(TokenRefreshView):
         new_access = serializer.validated_data['access']
         response = Response({"detail": "Token refreshed"})
 
-        # Set new Access Token in HttpOnly Cookie
+        # Set new access token in HttpOnly cookie
         response.set_cookie(
             key='access_token',
             value=new_access,
@@ -99,7 +98,9 @@ class CustomTokenRefreshView(TokenRefreshView):
             samesite='Lax',
             max_age=300  # 5 minutes
         )
+
         return response
+
 
 
 # 4. Logout View (Blacklist Refresh + Clear Cookies)
@@ -126,11 +127,13 @@ class LogoutView(APIView):
 # 5. /me Endpoint (Protected User Data)
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
-
     def get(self, request):
+        print(request.user)
         user = request.user
         return Response({
             "id": user.id,
             "username": user.username,
             "email": user.email,
         })
+
+    
