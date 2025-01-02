@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import JSONField
 
+# Profile Model
+# Saving some fileds as json as they cannot have consistent fields 
 
 class Profile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,related_name="profiles")

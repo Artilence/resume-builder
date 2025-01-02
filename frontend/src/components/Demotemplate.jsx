@@ -1,9 +1,8 @@
-// DemoTemplate.jsx
-import { useContext } from 'react';
-import { MyContext } from '../context/MyContext';
+import { useSelector } from 'react-redux';
 
 const DemoTemplate = () => {
-  const { userDetails, sections } = useContext(MyContext);
+  const userDetails = useSelector((state) => state.resumePreview.userDetails);
+  const sections = useSelector((state) => state.resumePreview.sections);
 
   const renderSection = (id) => {
     switch (id) {

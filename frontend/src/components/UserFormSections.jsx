@@ -1,9 +1,10 @@
-// src/components/UserFormSections.jsx
-import React, { useContext } from 'react';
-import { MyContext } from '../context/MyContext';
+/* eslint-disable react/prop-types */
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserDetails } from '../app/resumePreviewSlice/resultPreviewSlice';
 
 export default function UserFormSections({ fields }) {
-  const { userDetails, setUserDetails } = useContext(MyContext);
+  const dispatch = useDispatch();
+  const userDetails = useSelector((state) => state.resumePreview.userDetails);
 
   // Helper to get a nested value from userDetails by path, e.g. 'profile.name'
   const getValueByKey = (keyPath) => {
@@ -15,46 +16,56 @@ export default function UserFormSections({ fields }) {
     // For simplicity, assume 2 levels max: e.g. 'profile.name'
     const keys = keyPath.split('.');
     if (keys.length === 1) {
-      setUserDetails((prev) => ({
-        ...prev,
-        [keys[0]]: newValue,
-      }));
+      dispatch(
+        setUserDetails((prev) => ({
+          ...prev,
+          [keys[0]]: newValue,
+        }))
+      );
     } else if (keys.length === 2) {
       const [top, sub] = keys;
-      setUserDetails((prev) => ({
-        ...prev,
-        [top]: {
-          ...prev[top],
-          [sub]: newValue,
-        },
-      }));
+      dispatch(
+        setUserDetails((prev) => ({
+          ...prev,
+          [top]: {
+            ...prev[top],
+            [sub]: newValue,
+          },
+        }))
+      );
     }
     // If you have deeper nesting, you'd need a more robust approach.
   };
 
   // Add a new item to an array field
   const addArrayItem = (arrayKey, defaultItem = {}) => {
-    setUserDetails((prev) => ({
-      ...prev,
-      [arrayKey]: [...(prev[arrayKey] || []), defaultItem],
-    }));
+    dispatch(
+      setUserDetails((prev) => ({
+        ...prev,
+        [arrayKey]: [...(prev[arrayKey] || []), defaultItem],
+      }))
+    );
   };
 
   // Remove an item from an array field
   const removeArrayItem = (arrayKey, idx) => {
-    setUserDetails((prev) => ({
-      ...prev,
-      [arrayKey]: (prev[arrayKey] || []).filter((_, i) => i !== idx),
-    }));
+    dispatch(
+      setUserDetails((prev) => ({
+        ...prev,
+        [arrayKey]: (prev[arrayKey] || []).filter((_, i) => i !== idx),
+      }))
+    );
   };
 
   // Update a subfield in an array
   const updateArrayItem = (arrayKey, idx, subKey, newValue) => {
-    setUserDetails((prev) => {
-      const copy = [...prev[arrayKey]];
-      copy[idx] = { ...copy[idx], [subKey]: newValue };
-      return { ...prev, [arrayKey]: copy };
-    });
+    dispatch(
+      setUserDetails((prev) => {
+        const copy = [...prev[arrayKey]];
+        copy[idx] = { ...copy[idx], [subKey]: newValue };
+        return { ...prev, [arrayKey]: copy };
+      })
+    );
   };
 
   return (

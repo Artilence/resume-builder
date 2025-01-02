@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Profile
 
+# Profile Serializer
+# This serializer is used to serialize and deserialize the Profile model
 class ProfileSerializer (serializers.ModelSerializer):
     class Meta:
         model = Profile
