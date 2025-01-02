@@ -1,6 +1,6 @@
 // UserForm.jsx
-import React, { useContext } from 'react';
-import { MyContext } from '../context/MyContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { setSections } from '../app/resumePreviewSlice/resultPreviewSlice';
 import {
   DndContext,
   closestCenter,
@@ -17,7 +17,8 @@ import UserFormSectionWrapper from './UserFormSectionWrapper';
 
 const UserForm = () => {
   // Pull sections and setSections from Context
-  const { sections, setSections } = useContext(MyContext);
+  const dispatch = useDispatch();
+  const sections = useSelector((state) => state.resumePreview.sections);
 
   // Setup DnD sensors
   const sensors = useSensors(
@@ -37,7 +38,7 @@ const UserForm = () => {
       const oldIndex = sections.findIndex((sec) => sec.id === active.id);
       const newIndex = sections.findIndex((sec) => sec.id === over.id);
       const newArr = arrayMove(sections, oldIndex, newIndex);
-      setSections(newArr); // Update context
+      dispatch(setSections(newArr));
     }
   };
 

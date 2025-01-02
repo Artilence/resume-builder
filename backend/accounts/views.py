@@ -15,12 +15,15 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 
 # 1. Register View (Public)
+# create a new user
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [AllowAny]
 
 
+# 2. Login View (Public)
+# get access and refresh tokens
 class CustomTokenObtainPairView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -66,7 +69,9 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         del response.data['refresh']
 
         return response
-# 3. Custom Refresh View (Handles Refresh from Cookies)
+    
+# 3. Custom Refresh Serializer
+# for validating refresh token from cookies
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
         request = self.context['request']
@@ -77,16 +82,23 @@ class CustomTokenRefreshSerializer(TokenRefreshSerializer):
             return super().validate(attrs)
         raise ValidationError('No refresh token found in cookies')
 
-
+# 4. Custom Refresh View
+# for validating refresh token from cookies
+# and returning a new access token
 class CustomTokenRefreshView(TokenRefreshView):
     def post(self, request, *args, **kwargs):
+        # get the serializer
         serializer = self.get_serializer(data=request.data)
+        # validate the serializer
+
         try:
             serializer.is_valid(raise_exception=True)
         except ValidationError:
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
+        # get the new access token
         new_access = serializer.validated_data['access']
+        # create a response
         response = Response({"detail": "Token refreshed"})
 
         # Set new access token in HttpOnly cookie
@@ -125,6 +137,7 @@ class LogoutView(APIView):
 
 
 # 5. /me Endpoint (Protected User Data)
+# get user data
 class MeView(APIView):
     permission_classes = [IsAuthenticated]
     def get(self, request):

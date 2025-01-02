@@ -1,5 +1,5 @@
-// src/components/UserFormSectionWrapper.jsx
-import React, { useState } from 'react';
+/* eslint-disable react/prop-types */
+import { useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import UserFormSections from './UserFormSections';
@@ -9,12 +9,12 @@ export default function UserFormSectionWrapper({ section }) {
     useSortable({
       id: section.id,
     });
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
   };
 
-  // Collapsible
   const [isOpen, setIsOpen] = useState(true);
   const toggleSection = () => setIsOpen(!isOpen);
 

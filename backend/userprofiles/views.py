@@ -7,6 +7,9 @@ from .models import Profile
 from .serializers import ProfileSerializer
 # Create your views here.
 
+# Profile Create View
+# This view is used to create a new profile
+# It is protected by the IsAuthenticated permission class
 class ProfileCreateView(generics.CreateAPIView):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
