@@ -1,7 +1,7 @@
 import html2pdf from 'html2pdf.js';
 import jsPDF from 'jspdf';
 import { useRef } from 'react';
-import Demotemplate from '../components/Demotemplate';
+import Demotemplate from '../components/DemoTemplate';
 import UserForm from '../components/UserForm';
 import Layout from '../components/Layout/Layout';
 

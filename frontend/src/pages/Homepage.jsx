@@ -1,4 +1,4 @@
-import Layout from './components/Layout/Layout';
+import Layout from '../components/Layout/Layout';
 
 const Homepage = () => {
   const HandleLinkedinLogin = () => {
@@ -7,7 +7,7 @@ const Homepage = () => {
     const REDIRECT_URI = 'http://localhost:5173/linkedin/callback';
     const SCOPES = 'r_liteprofile%20r_emailaddress';
     const authUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${encodeURIComponent(
-      'http://localhost:5173/linkedin/callback',
+      'http://localhost:5173/linkedin/callback'
     )}&scope=r_liteprofile%20w_member_social`;
     window.location.href = authUrl;
   };
