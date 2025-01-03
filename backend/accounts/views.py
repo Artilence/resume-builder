@@ -25,7 +25,11 @@ class RegisterView(generics.CreateAPIView):
 # 2. Login View (Public)
 # get access and refresh tokens
 class CustomTokenObtainPairView(TokenObtainPairView):
+    permission_classes = [AllowAny]
+    queryset = User.objects.all()
+    
     def post(self, request, *args, **kwargs):
+        print('login view')
         response = super().post(request, *args, **kwargs)
 
         # Get tokens from response
@@ -75,43 +79,50 @@ class CustomTokenObtainPairView(TokenObtainPairView):
 class CustomTokenRefreshSerializer(TokenRefreshSerializer):
     def validate(self, attrs):
         request = self.context['request']
-        refresh_cookie = request.COOKIES.get('refresh_token')
+        refresh_cookie = request.COOKIES.get('refresh_token')  # Extract refresh token from cookies
 
         if refresh_cookie:
-            attrs['refresh'] = refresh_cookie
-            return super().validate(attrs)
+            # Inject the refresh token into the attrs for validation
+            attrs['refresh'] = refresh_cookie  
+            return super().validate(attrs)  # Continue default validation
+        
+        # If no refresh token is found in cookies, raise error
         raise ValidationError('No refresh token found in cookies')
+
 
 # 4. Custom Refresh View
 # for validating refresh token from cookies
 # and returning a new access token
 class CustomTokenRefreshView(TokenRefreshView):
+    serializer_class = CustomTokenRefreshSerializer
+
     def post(self, request, *args, **kwargs):
-        # get the serializer
-        serializer = self.get_serializer(data=request.data)
-        # validate the serializer
+        refresh_cookie = request.COOKIES.get('refresh_token')  # Extract refresh token from cookies
+        
+        # Pass the refresh token to serializer explicitly if available
+        serializer = self.get_serializer(
+            data={'refresh': refresh_cookie} if refresh_cookie else {}
+        )
 
         try:
             serializer.is_valid(raise_exception=True)
-        except ValidationError:
+        except ValidationError as e:
+            print('Validation error:', e.detail)
             return Response({"error": "Invalid or expired refresh token"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # get the new access token
+        # If successful, issue new access token
         new_access = serializer.validated_data['access']
-        # create a response
         response = Response({"detail": "Token refreshed"})
-
-        # Set new access token in HttpOnly cookie
         response.set_cookie(
             key='access_token',
             value=new_access,
             httponly=True,
-            secure=True,
+            secure=False,  # Set to True for production
             samesite='Lax',
-            max_age=300  # 5 minutes
+            max_age=300
         )
-
         return response
+
 
 
 
