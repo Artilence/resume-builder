@@ -1,39 +1,26 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { registerSchema } from '../yup-schemas';
+import { useRegisterMutation } from '../app/auth/authAPI';
+import { useNavigate } from 'react-router';
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(registerSchema),
   });
+  // const [registerUser, { isLoading }] = useRegisterMutation();
+  const [registerUser] = useRegisterMutation();
+  const navigate = useNavigate();
 
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess(false);
-
-    try {
-      const response = await axios.post(
-        'http://127.0.0.1:8000/api/register/',
-        formData
-      );
-      if (response.status === 201) {
-        setSuccess(true);
-        setFormData({ username: '', email: '', password: '' });
-      }
-    } catch (err) {
-      setError(err.response?.data?.username || 'Registration failed.');
+  const onSubmit = async (data) => {
+    console.log(data);
+    const response = await registerUser(data).unwrap();
+    if (response?.id) {
+      navigate('/login');
     }
   };
 
@@ -42,18 +29,22 @@ const Register = () => {
       <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           {/* Username Field */}
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Username</label>
             <input
               type="text"
               name="username"
-              value={formData.username}
-              onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              {...register('username')}
             />
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.username.message}
+              </p>
+            )}
           </div>
 
           {/* Email Field */}
@@ -62,11 +53,15 @@ const Register = () => {
             <input
               type="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              {...register('email')}
             />
+            {errors.email && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           {/* Password Field */}
@@ -75,11 +70,32 @@ const Register = () => {
             <input
               type="password"
               name="password"
-              value={formData.password}
-              onChange={handleChange}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
+              {...register('password')}
             />
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+          <div className="mb-6">
+            <label className="block text-sm font-medium mb-2">
+              Confirm Password
+            </label>
+            <input
+              type="password"
+              name="confirmPassword"
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              {...register('confirmPassword')}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
+            )}
           </div>
 
           {/* Submit Button */}
@@ -92,11 +108,9 @@ const Register = () => {
         </form>
 
         {/* Error Message */}
-        {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-        {/* Success Message */}
-        {success && (
-          <p className="text-green-500 text-center mt-4">
-            Registration successful! Please log in.
+        {errors.root && (
+          <p className="text-red-500 text-center mt-4">
+            {errors.root.message || 'Something went wrong'}
           </p>
         )}
       </div>

@@ -12,16 +12,16 @@ const generateUserDetailsFromLayout = (layoutId) => {
   const initialDetails = {};
 
   layout.sections.forEach((section) => {
-    console.log('section:', section, '\n');
+    // console.log('section:', section, '\n');
     section.fields.forEach((field) => {
-      console.log('field:', field, '\n');
+      // console.log('field:', field, '\n');
 
       const keys = field.key.split('.');
       let current = initialDetails;
 
       // Traverse and build nested structure
       keys.forEach((key, index) => {
-        console.log('key:', key, '\n');
+        // console.log('key:', key, '\n');
 
         if (index === keys.length - 1) {
           current[key] =
@@ -30,13 +30,13 @@ const generateUserDetailsFromLayout = (layoutId) => {
           if (!current[key]) current[key] = {};
           current = current[key];
         }
-        console.log('-KE-');
+        // console.log('-KE-');
       });
-      console.log('-FE-');
+      // console.log('-FE-');
     });
-    console.log('-S-');
+    // console.log('-S-');
   });
-  console.log(initialDetails);
+  // console.log(initialDetails);
 
   return initialDetails;
 };
