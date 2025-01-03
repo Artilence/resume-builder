@@ -6,24 +6,6 @@ const Navbar = () => {
       <Link to="/">
         <img src={Logo} alt="logo" className="w-[70px] object-contain " />
       </Link>
-      <Link
-        to="/createprofile"
-        className="bg-blue-500 text-white px-5 py-4 h-[max-content] rounded-md flex items-center"
-      >
-        Create Profile
-      </Link>
-      <Link
-        to="/selectprofile"
-        className="bg-blue-500 text-white px-5 py-4 h-[max-content] rounded-md flex items-center"
-      >
-        Select Profile
-      </Link>
-      <Link
-        to="/previewresume"
-        className="bg-blue-500 text-white px-5 py-4 h-[max-content] rounded-md flex items-center"
-      >
-        Preview Resume
-      </Link>
     </div>
   );
 };

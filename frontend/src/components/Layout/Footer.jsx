@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import AmericanFlag from '../../assets/AmericanFlag.webp';
 import { footerBottomLinks, footerIcons } from '../../Imports';
 const Footer = () => {
@@ -6,7 +5,7 @@ const Footer = () => {
     <div className="w-full bg-footer-blue text-white flex px-10 py-8 gap-4 flex-col">
       <div className="flex flex-col md:flex-row gap-1">
         {/* Footer Social  Section-left/top */}
-        <div className="w-full flex flex-col items-center justify-center gap-5 pb-5">
+        <div className="flex flex-col items-center justify-center gap-5 pb-5">
           <h2 className="text-[24px] font-bold text-center">
             Connect with us on Social media
           </h2>
