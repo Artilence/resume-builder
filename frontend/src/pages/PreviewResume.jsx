@@ -1,7 +1,5 @@
-import html2pdf from 'html2pdf.js';
-import jsPDF from 'jspdf';
 import { useRef } from 'react';
-import Demotemplate from '../components/DemoTemplate';
+import DemoTemplate from '../components/DemoTemplate';
 import UserForm from '../components/UserForm';
 import Layout from '../components/Layout/Layout';
 
@@ -9,25 +7,23 @@ const PreviewResume = () => {
   const resumeRef = useRef(null); // Reference to the resume preview
 
   const downloadPDF = async () => {
-    const element = resumeRef.current; // Get the resume DOM element
-
-    const options = {
-      margin: 10,
-      filename: 'resume.pdf',
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: {
-        scale: 1, // No need to scale, keeps original text
-        useCORS: true,
-      },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-      },
-    };
-
-    // Generate PDF and download it
-    await html2pdf().from(element).set(options).save();
+    // const element = resumeRef.current; // Get the resume DOM element
+    // const options = {
+    //   margin: 10,
+    //   filename: 'resume.pdf',
+    //   image: { type: 'jpeg', quality: 0.98 },
+    //   html2canvas: {
+    //     scale: 1, // No need to scale, keeps original text
+    //     useCORS: true,
+    //   },
+    //   jsPDF: {
+    //     unit: 'mm',
+    //     format: 'a4',
+    //     orientation: 'portrait',
+    //   },
+    // };
+    // // Generate PDF and download it
+    // await html2pdf().from(element).set(options).save();
   };
   return (
     <Layout>
@@ -51,7 +47,7 @@ const PreviewResume = () => {
             ref={resumeRef}
             className=" transform scale-50 origin-top-right border border-black "
           >
-            <Demotemplate />
+            <DemoTemplate />
           </div>
         </div>
       </div>
