@@ -1,6 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { loginUser, fetchUserProfile } from './authAPI';
 
+// Required for every protected route.
+// Modifications needed:
+// 1. Add a logout thunk to clear the user state and remove persisted state
+// 2. Add a fetchUser thunk to fetch the user profile after login or refresh
+// 3. Add a login thunk to trigger login API and fetch user profile
+// 4. persist the state so that user can stay logged in even after refresh/ but also always check the first time user
+//    uses the protected.
+
 // 1. Login Thunk (Triggers Login API and Fetch User Profile)
 export const login = createAsyncThunk(
   'auth/login',
